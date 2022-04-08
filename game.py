@@ -110,11 +110,12 @@ class Game:
         while run:
             clock.tick(500)
 
-            if self.pause == False:
-                # gen monsters
-                if time.time() - self.timer >= random.randrange(1,6)/3:
-                    self.timer = time.time()
-                    self.gen_enemies()
+            if (
+                self.pause == False
+                and time.time() - self.timer >= random.randrange(1, 6) / 3
+            ):
+                self.timer = time.time()
+                self.gen_enemies()
 
             pos = pygame.mouse.get_pos()
 
@@ -139,10 +140,9 @@ class Game:
                     run = False
 
                 if event.type == pygame.MOUSEBUTTONUP:
-                    # if you're moving an object and click
                     if self.moving_object:
-                        not_allowed = False
                         tower_list = self.attack_towers[:] + self.support_towers[:]
+                        not_allowed = False
                         for tower in tower_list:
                             if tower.collide(self.moving_object):
                                 not_allowed = True
@@ -170,9 +170,9 @@ class Game:
                             else:
                                 pygame.mixer.music.pause()
 
-                        # look if you click on side menu
-                        side_menu_button = self.menu.get_clicked(pos[0], pos[1])
-                        if side_menu_button:
+                        if side_menu_button := self.menu.get_clicked(
+                            pos[0], pos[1]
+                        ):
                             cost = self.menu.get_item_cost(side_menu_button)
                             if self.money >= cost:
                                 self.money -= cost
@@ -182,12 +182,11 @@ class Game:
                         btn_clicked = None
                         if self.selected_tower:
                             btn_clicked = self.selected_tower.menu.get_clicked(pos[0], pos[1])
-                            if btn_clicked:
-                                if btn_clicked == "Upgrade":
-                                    cost = self.selected_tower.get_upgrade_cost()
-                                    if self.money >= cost:
-                                        self.money -= cost
-                                        self.selected_tower.upgrade()
+                            if btn_clicked and btn_clicked == "Upgrade":
+                                cost = self.selected_tower.get_upgrade_cost()
+                                if self.money >= cost:
+                                    self.money -= cost
+                                    self.selected_tower.upgrade()
 
                         if not(btn_clicked):
                             for tw in self.attack_towers:
@@ -304,7 +303,7 @@ class Game:
 
         # draw wave
         self.win.blit(wave_bg, (10,10))
-        text = self.life_font.render("Wave #" + str(self.wave), 1, (255,255,255))
+        text = self.life_font.render(f"Wave #{str(self.wave)}", 1, (255,255,255))
         self.win.blit(text, (10 + wave_bg.get_width()/2 - text.get_width()/2, 25))
 
         pygame.display.update()
@@ -319,5 +318,5 @@ class Game:
             self.moving_object = obj
             obj.moving = True
         except Exception as e:
-            print(str(e) + "NOT VALID NAME")
+            print(f'{str(e)}NOT VALID NAME')
 
